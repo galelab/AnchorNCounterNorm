@@ -4,7 +4,7 @@
 \alias{load_nCounter_files}
 \title{Load nCounter files}
 \usage{
-load_nCounter_files(pathtoRCC = "./", target_file)
+load_nCounter_files(pathtoRCC = ".", meta.data = "", save.fig = TRUE)
 }
 \arguments{
 \item{pathtoRCC}{matrix raw or normalized (default is current working directory)}
@@ -15,7 +15,7 @@ load_nCounter_files(pathtoRCC = "./", target_file)
 This loads count and target file info (internal function only)
 }
 \examples{
-load_nCounter_files(pathtoRCC="./", target_file="targetfile.csv")
+load_nCounter_files(pathtoRCC="./", meta.data="targetfile.csv")
 
 }
 \keyword{Ncounter}
