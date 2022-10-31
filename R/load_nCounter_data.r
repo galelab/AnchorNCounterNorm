@@ -11,7 +11,7 @@
 #' @examples
 #' data <- load_nCounter_files(pathtoRCC="./", meta.data="targetfile.csv")
 #' 
-load_nCounter_files <- function(pathtoRCC=".", meta.data="", save.fig=TRUE, output_dir=getwd()) {
+load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, output_dir=getwd()) {
     # read in meta data 
     target = read.csv(meta.data, header = TRUE)
     if (!("sample" %in% colnames(target))) {
