@@ -142,6 +142,6 @@ load_nCounter_files <- function(pathtoRCC=".", meta.data="", save.fig=TRUE, outp
 
     return(list(counts = raw_counts, meta.data = target, qc = qc_nCounter_data,
      p1 = p1, p2 = p2, p3 = p3, p4 = p4, 
-     raw_counts_melted_datamelted_raw = melted_raw))
+     raw_counts_melted_data = melted_raw))
 
 }
