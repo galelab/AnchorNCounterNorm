@@ -123,7 +123,7 @@ load_nCounter_files <- function(pathtoRCC=".", meta.data="", save.fig=TRUE) {
         theme_minimal() +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 8)) +
-        ggtitle("e) Log2() raw counts") + labs(x = "", y = "log2 raw counts") +
+        ggtitle("Log2() raw counts") + labs(x = "", y = "log2 raw counts") +
         facet_wrap(~Class, nrow = 1)
     if (isTRUE(save.fig)) {
         message("STATUS: saving figure as png file here: ", getwd())
