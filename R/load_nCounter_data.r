@@ -84,57 +84,57 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
     melted_raw <- melt(raw_counts)
     p1 <- ggplot(melted_raw, aes(x = variable, y = value, fill = Class)) +
         geom_bar(stat = "identity") +
-        theme_minimal() +
+        theme_minimal() + labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8)) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 6)) +
         ggtitle("Total raw counts") + labs(x="", y="raw counts")
     if(isTRUE(save.fig)) {
         message("STATUS: saving figure as png file here: ", output_dir)
-        ggsave(file.path(output_dir, "barplot_totalrawcounts.png"), bg = "white", dpi = 300)
-        ggsave(file.path(output_dir, "barplot_totalrawcounts.pdf"), bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_totalrawcounts.png"), width = 4.5, height = 3, bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_totalrawcounts.pdf"),  width = 4.5, height = 3, bg = "white", dpi = 300)
 
     }
 
    p2 <- ggplot(melted_raw, aes(x = variable, y = log2(value), fill = Class)) +
         geom_bar(stat = "identity") +
-        theme_minimal() +
+        theme_minimal() + labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 8)) +
-        ggtitle("Log2() raw counts") + labs(x = "", y = "log2 raw counts") 
+        ggtitle("Log2 raw counts") + labs(x = "", y = "log2 raw counts") 
 
     if (isTRUE(save.fig)) {
         message("STATUS: saving figure as png file here: ", output_dir)
-        ggsave(file.path(output_dir, "barplot_log2rawcounts.png"), bg = "white", dpi = 300)
-        ggsave(file.path(output_dir, "barplot_log2rawcounts.pdf"), bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_log2rawcounts.png"),  width = 4.5, height = 3, bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_log2rawcounts.pdf"),  width = 4.5, height = 3, bg = "white", dpi = 300)
 
     }
 
     # raw counts all sample counts - faceted barplot by gene class
     p3<- ggplot(melted_raw, aes(x = variable, y = value, fill = Class)) +
         geom_bar(stat = "identity") +
-        theme_minimal() +
+        theme_minimal() + labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 8)) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 6)) +
         ggtitle("Total raw counts") + labs(x = "", y = "raw counts") +
         facet_wrap(~Class, nrow = 1)
     if (isTRUE(save.fig)) {
         message("STATUS: saving figure as png file here: ", output_dir)
-        ggsave(file.path(output_dir, "barplot_Class_totalrawcounts.png"), bg = "white", dpi = 300)
-        ggsave(file.path(output_dir, "barplot_Class_totalrawcounts.pdf"), bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_Class_totalrawcounts.png"), bg = "white", width = 6, height = 3, dpi = 300)
+        ggsave(file.path(output_dir, "barplot_Class_totalrawcounts.pdf"), bg = "white", width = 6, height = 3, dpi = 300)
 
     }
     # log2() all sample counts - faceted barplot by gene class
     p4<- ggplot(melted_raw, aes(x = variable, y = log2(value), fill = Class)) +
         geom_bar(stat = "identity") +
-        theme_minimal() +
+        theme_minimal() +labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 8)) +
-        ggtitle("Log2() raw counts") + labs(x = "", y = "log2 raw counts") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 6)) +
+        ggtitle("Log2 raw counts") + labs(x = "", y = "log2 raw counts") +
         facet_wrap(~Class, nrow = 1)
     if (isTRUE(save.fig)) {
         message("STATUS: saving figure as png file here: ", output_dir)
-        ggsave(file.path(output_dir, "barplot_Class_log2rawcounts.png"), bg = "white", dpi = 300)
-        ggsave(file.path(output_dir, "barplot_Class_log2rawcounts.pdf"), bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_Class_log2rawcounts.png"), width = 6, height = 3, bg = "white", dpi = 300)
+        ggsave(file.path(output_dir, "barplot_Class_log2rawcounts.pdf"), width = 6, height = 3, bg = "white", dpi = 300)
 
     }
     write.csv(raw_counts, file.path(output_dir, "counts.csv"))
