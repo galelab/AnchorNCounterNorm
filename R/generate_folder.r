@@ -3,6 +3,9 @@
 #' @param foldername  name of folder (directory) to generate
 #' @examples
 #' generate_folder("directoryname")
+#' 
+#' 
+
 
 generate_folder <- function(foldername) {
     workDir <- getwd()
