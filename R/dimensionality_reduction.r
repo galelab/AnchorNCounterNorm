@@ -1,7 +1,13 @@
 #' dimentionality reduction 
 #'
 #' This implements pca or umap dimensionality reduction on data from normalization step 
-#' @param counts  matrix counts
+#' @param exprs  normalized log counts
+#' @param meta.data meta data for experiment
+#' @param target_columns meta data to display by shape and color (2 columns can be shown)
+#' @param reduction what feature reduction algorithm to use PCA (default) or UMAP
+#' @param save.fig whether to save figures in a file (defualt is TRUE)
+#' @param output_dir where to save results (default is current working directory)
+#' @param pointsize size of dots that represent samples on pca or umap (default is 3)
 #' @keywords house keeping genes
 #' @export
 #' @import factoextra
