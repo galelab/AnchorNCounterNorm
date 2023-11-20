@@ -29,6 +29,14 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
         exprsdata <- as.matrix(data.frame(exprsdata, check.names = FALSE))
         class(exprsdata) <- "numeric"
         rownames(exprsdata) <- genes
+        if (!(compare.column %in% colnames(meta.data))) {
+            stop("WARNING: ", compare.column, " not in header of the meta.data please make sure the name of the column is spelled correctly")
+        }
+        if (!is.null(covariate.column)) {
+            if (!(covariate.column %in% colnames(meta.data))) {
+                stop("WARNING: ", covariate.column, " not in header of the meta.data please make sure the name of the column is spelled correctly")
+            }
+        }
         if (((DE.test=="ttest") || (DE.test=="wilcox")) & is.null(contrastslist)){
             stop("ERROR: if contrastslist aren't specifed then the DE.test parameter\nneeds to be set equal to ANOVA so all comparisons are run ")
         }
