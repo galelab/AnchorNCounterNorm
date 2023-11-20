@@ -1,7 +1,7 @@
 #' dimentionality reduction 
 #'
 #' This implements pca or umap dimensionality reduction on data from normalization step 
-#' @param exprs  normalized log counts
+#' @param exprsdata  normalized log counts
 #' @param meta.data meta data for experiment
 #' @param target_columns meta data to display by shape and color (2 columns can be shown)
 #' @param reduction what feature reduction algorithm to use PCA (default) or UMAP
@@ -19,7 +19,7 @@
 #' 
 #' 
 
-dim_reduction <- function(exprs, meta.data,  target_columns=c(2,3),
+dim_reduction <- function(exprsdata, meta.data,  target_columns=c(2,3),
     reduction="PCA", save.fig=TRUE, output_dir=getwd(), pointsize=3) {
 
     class1 = meta.data[, target_columns[1]]
@@ -27,7 +27,7 @@ dim_reduction <- function(exprs, meta.data,  target_columns=c(2,3),
     P36 <- createPalette(length(levels(factor(class2))), c("#ff0000", "#00ff00", "#0000ff"))
 
     if (reduction=="PCA") {
-        pca <- prcomp(t(exprs))
+        pca <- prcomp(t(exprsdata))
         E <- get_eig(pca)
         PCA <- pca$x
 
@@ -79,7 +79,7 @@ dim_reduction <- function(exprs, meta.data,  target_columns=c(2,3),
         loadingscores <- loadingscores[with(loadingscores, order(-PC2)), ]
         write.table(loadingscores["PC2"], file = file.path(output_dir, "loadingscores_pc2.txt"))
     } else if (reduction=="UMAP") {
-        UMAP <- umap(t(exprs), n_neighbors=5)
+        UMAP <- umap(t(exprsdata), n_neighbors=5)
         U <- UMAP$layout
         df <- as.data.frame(cbind(U[, 1], U[, 2], class1, class2))
         colnames(df) <- c("UMAP1", "UMAP2", "class1", "class2")
