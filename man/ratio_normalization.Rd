@@ -7,6 +7,10 @@
 ratio_normalization(data, hkgenes, output_dir = getwd())
 }
 \arguments{
+\item{hkgenes}{list of hk genes to use to get ratio}
+
+\item{output_dir}{directory for results (default is working directory)}
+
 \item{counts}{matrix counts}
 }
 \description{

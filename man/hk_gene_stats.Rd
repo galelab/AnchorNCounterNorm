@@ -13,7 +13,15 @@ hk_gene_stats(
 )
 }
 \arguments{
-\item{counts}{matrix counts}
+\item{data}{counts compiled from rcc files in load_nCounter_files step}
+
+\item{group.by}{what group counts of each house keeping gene, individual samples are recomme5ded}
+
+\item{min_num_hk_genes}{minimum number of house keeping genes to keep for analysis}
+
+\item{manually_selected_hk_genes}{list of house keeping genes manually selected}
+
+\item{output_dir}{directory for results (default is working directory)}
 }
 \description{
 This assesses which genes should be used for ratio normalization
