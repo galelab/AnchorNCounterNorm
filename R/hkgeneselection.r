@@ -20,20 +20,47 @@
 hk_gene_stats <- function(data, group.by="sample",
     min_num_hk_genes = 5, manually_selected_hk_genes = FALSE, output_dir = getwd()) {
     if (isFALSE(manually_selected_hk_genes)) {
-        hk <- identifyhkgenes(data$counts, hknum=min_num_hk_genes, output_dir = getwd())
-        pl <- violin_plots_hkgenes(data$counts[data$counts$Gene_Name %in% hk$hkgenes, ], 
+        lowestcv <- identifyhkgenes(data$counts, hknum = min_num_hk_genes, output_dir = output_dir)
+        pl <- violin_plots_hkgenes(data$counts[data$counts$Gene_Name %in% lowestcv$hkgenes, ], 
             data$meta.data, group.by=group.by,
-            output_dir = output_dir, "hkviolinplot")
+            output_dir = output_dir, "lowestCVgenesviolinplot")
+        pl2 <- violin_plots_hkgenes(data$counts[data$counts$Class =="Housekeeping", ], 
+            data$meta.data, group.by=group.by,
+            output_dir = output_dir, "HKgenesCVviolinplot")
+        hkstats <- get_CV_4_HKgenes(data$counts[data$counts$Class =="Housekeeping", ], output_dir = output_dir)
+        return(list("lowestCVstats" = lowestcv, "hkstats" = hkstats$hkstats, "lowestCVviolinplot" = pl, "HKgenesCVviolinplot" = pl2))
+
     } else {
         pl <- violin_plots_hkgenes(data$counts[data$counts$Gene_Name %in% manually_selected_hk_genes, ], 
             data$meta.data, group.by=group.by,
             output_dir = output_dir, "hkviolinplotmanually")
+        return(list("violinplot" = pl))
     }
-    return(list("hkstats" = hk, "violinplot" = pl))
 }
 
 calc_CV <- function(x) {
     sd(x) / mean(x)
+}
+
+get_CV_4_HKgenes <- function(df, output_dir) {
+    dfdata <- df[ 3:length(colnames(df))]
+    gene_names <-  df[, "Gene_Name"]
+    dfdata <- as.matrix(as.data.frame(dfdata))
+    class(dfdata) <- "numeric"
+    CV_all <- apply(dfdata, MARGIN = 1, calc_CV)
+    mean_all <- apply(dfdata, MARGIN = 1, mean)
+    sd_all <- apply(dfdata, MARGIN = 1, sd)
+    geomean_all <- apply(dfdata, MARGIN = 1, geoMean)
+    alldf <- data.frame(matrix(nrow = length(rownames(dfdata)), ncol = 5))
+    colnames(alldf) <- c("mean", "geomean", "sd", "CV", "genes")
+    alldf$mean <- as.numeric(mean_all)
+    alldf$geomean <- as.numeric(geomean_all)
+    alldf$sd <- as.numeric(sd_all)
+    alldf$CV <- as.numeric(CV_all)
+    alldf$genes <- gene_names
+    alldf <- alldf[order(CV_all), ]
+    write.csv(alldf, file.path(output_dir, "hkgenesstats.csv"), quote=F, row.names=F)
+    return(list("hkstats" = alldf))
 }
 
 identifyhkgenes <- function(df, hknum=5, output_dir=getwd()) {
@@ -55,8 +82,8 @@ identifyhkgenes <- function(df, hknum=5, output_dir=getwd()) {
     alldf$CV <- as.numeric(CV_all)
     alldf$genes <- gene_names
     alldf <- alldf[order(CV_all), ]
-    write.csv(alldf, file.path(output_dir, "allgenesstats.csv"), quote=F, row.names=F)
-    message("STATUS: number of genes with lowest CV = ", alldf$genes[1:hknum])
+    write.csv(alldf, file.path(output_dir, "lowestCVgenesstats.csv"), quote=F, row.names=F)
+    message("STATUS: number of genes with lowest CV = ", paste(alldf$genes[1:hknum], collapse=","))
     return(list("hkgenes"= alldf$genes[1:hknum], "allstats"=alldf))
 }
 
@@ -79,7 +106,7 @@ violin_plots_hkgenes <- function(countshk, meta.data, group.by="",
         theme(axis.text.x = element_text(
             angle = 90, vjust = 1, size = 6, hjust = 1
         ))
-    ggsave(filename = paste0(filename,".png"), height = height, width = width, dpi = 300)
+    ggsave(filename = file.path(output_dir, paste0(filename,".png")), height = height, width = width, dpi = 300)
     return(pl)
 }
 
