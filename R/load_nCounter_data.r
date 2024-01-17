@@ -15,7 +15,7 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
     # read in meta data 
     target = read.csv(meta.data, header = TRUE)
     if (!("sample" %in% colnames(target))) {
-        message("WARNING: if header doesn't contain column named \"sample\", please rename in meta data file or specify column with sample ids in future steps with sample_column option. sample column should have rcc file names")
+        message("WARNING: if header doesn't contain column named \"sample \", please rename in meta data file or specify column with sample ids in future steps with sample_column option. sample column should have rcc file names")
     }
 
     # read in rcc files 
@@ -25,12 +25,12 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
     if (length(files.RCC) > 0 ) { 
         message("STATUS: Number of RCC files is ", length(files.RCC))
     } else {
-        stop("No rcc files found in directory ", pathtoRCC, " fix before continuing")
+        stop("No rcc files found in directory ", pathtoRCC, " fix befo re continuing")
     }
 
     # generate data frames to store data
     raw_counts = as.data.frame(matrix(nrow = 0, ncol = length(files.RCC) + 2))
-    colnames(raw_counts)[1:2] = c("Gene_Name", "Class")
+    colnames(raw_counts)[1:2] = c("Gene_Name", "Class" )
     qc_nCounter_data = as.data.frame(matrix(nrow = length(files.RCC), ncol = 11))
     colnames(qc_nCounter_data) = c(
         "BCAC_ID", "SampleID", "Owner", "Comments", 
@@ -53,8 +53,8 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
         } else if (length(rcc$Code_Summary$Count) != dim(raw_counts)[1]){
             #This checks to make sure subsequent RCC files have the same number of genes as first one
             stop("Number of genes in RCC file ", length(rcc$Code_Summary$Count), 
-                "does not match previous file ", dim(raw_counts)[1], 
-                ". RCC files need to have the same number of genes if being merged together")
+                " does not match previous file ", dim(raw_counts)[1], 
+                ". RCC files need to have the same number of genes if being merged together") 
 
         } else if (isFALSE(all.equal(raw_counts$Gene_Name, as.character(rcc$Code_Summary$Name)))) {
             #This checks to make sure genes in subsequent RCC file are in the same order if not tries to change 
@@ -82,12 +82,18 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
 
     # Generate figures to examine counts
     melted_raw <- melt(raw_counts)
+    if (length(unique(melted_raw$variable)) < 20) {
+        fontsize = 6
+    } else {
+        fontsize = 3
+    }
     p1 <- ggplot(melted_raw, aes(x = variable, y = value, fill = Class)) +
         geom_bar(stat = "identity") +
         theme_minimal() + labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 6)) +
-        ggtitle("Total raw counts") + labs(x="", y="raw counts")
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = fontsize)) +
+        ggtitle("Total raw counts") + labs(x="", y="raw counts") 
+
     if(isTRUE(save.fig)) {
         message("STATUS: saving figure as png file here: ", output_dir)
         ggsave(file.path(output_dir, "barplot_totalrawcounts.png"), width = 4.5, height = 3, bg = "white", dpi = 300)
@@ -99,7 +105,7 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
         geom_bar(stat = "identity") +
         theme_minimal() + labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 8)) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = fontsize)) +
         ggtitle("Log2 raw counts") + labs(x = "", y = "log2 raw counts") 
 
     if (isTRUE(save.fig)) {
@@ -114,7 +120,7 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
         geom_bar(stat = "identity") +
         theme_minimal() + labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 6)) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = fontsize)) +
         ggtitle("Total raw counts") + labs(x = "", y = "raw counts") +
         facet_wrap(~Class, nrow = 1)
     if (isTRUE(save.fig)) {
@@ -128,7 +134,7 @@ load_nCounter_files <- function(pathtoRCC=getwd(), meta.data="", save.fig=TRUE, 
         geom_bar(stat = "identity") +
         theme_minimal() +labs(fill="") +
         scale_fill_manual(values = c("#ff615d", "#004c7a", "#ffd400", "#61c57b")) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 6)) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = fontsize)) +
         ggtitle("Log2 raw counts") + labs(x = "", y = "log2 raw counts") +
         facet_wrap(~Class, nrow = 1)
     if (isTRUE(save.fig)) {
