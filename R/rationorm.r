@@ -26,9 +26,10 @@ ratio_normalization <- function (data, hkgenes, output_dir=getwd(), save.fig=TRU
         norm_ratio[, col] <- norm_ratio[, col] / hkcountgeomeans[col]
     }
     pl <- boxplot_normalization(norm_ratio, data$meta.data, output_dir, save.fig = save.fig)
-    print(head(norm_ratio))
-    write.csv(log2(norm_ratio), file.path(output_dir, "lognormratiocounts.csv"))
-    return(list("counts_ratio"=norm_ratio, "log_counts_ratio"=log(norm_ratio), "boxplot"=pl))
+    norm_ratio_log <- log2(norm_ratio)
+    norm_ratio_log[norm_ratio_log == -Inf] <- 0
+    write.csv(norm_ratio_log, file.path(output_dir, "lognormratiocounts.csv"))
+    return(list("counts_ratio" = norm_ratio, "log_counts_ratio" = norm_ratio_log, "boxplot" = pl))
 }
 
 boxplot_normalization <- function(norm_matrix ,meta.data, output_dir=getwd(), save.fig=TRUE, separte_norm_counts_by_condition=NULL) {
