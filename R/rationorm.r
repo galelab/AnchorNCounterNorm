@@ -19,7 +19,6 @@ ratio_normalization <- function (data, hkgenes, output_dir=getwd(), save.fig=TRU
     countsall <- data$counts[data$counts$Class%in% c("Endogenous", "Housekeeping"), 3:length(colnames(data$counts))]
     rownames(countsall) <- data$counts[data$counts$Class%in% c("Endogenous", "Housekeeping"), "Gene_Name"]
     hkcountgeomeans <- apply(countsall[hkgenes, ], MARGIN = 2, geoMean)
-    print(hkcountgeomeans)
     norm_ratio <- data$counts[data$counts$Class%in% c("Endogenous"), 3:length(colnames(data$counts))]
     rownames(norm_ratio) <-  data$counts[data$counts$Class%in% c("Endogenous"),  "Gene_Name"]
     for (col in colnames(norm_ratio)) {
