@@ -82,7 +82,7 @@ identifyhkgenes <- function(df, hknum=5, output_dir=getwd()) {
     alldf$CV <- as.numeric(CV_all)
     alldf$genes <- gene_names
     alldf <- alldf[order(CV_all), ]
-    write.csv(alldf, file.path(output_dir, "lowestCVgenesstats.csv"), quote=F, row.names=F)
+    write.csv(alldf, file.path(output_dir, "lowestCVagenesstats.csv"), quote=F, row.names=F)
     message("STATUS: number of genes with lowest CV = ", paste(alldf$genes[1:hknum], collapse=","))
     return(list("hkgenes"= alldf$genes[1:hknum], "allstats"=alldf))
 }
@@ -90,7 +90,6 @@ identifyhkgenes <- function(df, hknum=5, output_dir=getwd()) {
 violin_plots_hkgenes <- function(countshk, meta.data, group.by="",
     output_dir=getwd(), filename="hkviolinplot", height = 4, width = 5 ) {
     hkmelt <- reshape2::melt(countshk)
-    print(head(hkmelt))
     data_variable <- c()
     for (v in hkmelt$variable) {
         data_variable <- c(data_variable, meta.data[meta.data$sample==v, group.by])
