@@ -14,30 +14,45 @@
 #' @import umap
 #' @import ggplot2
 #' @import Polychrome
+#' @import colorRamp
 #' @examples
 #' data <- hk_gene_stats(counts)
 #' 
 #' 
 
 dim_reduction <- function(exprsdata, meta.data,  target_columns=c(2,3),
-    reduction="PCA", save.fig=TRUE, output_dir=getwd(), pointsize=3) {
+    reduction="PCA", save.fig=TRUE, output_dir=getwd(), file.name="PCA", pointsize=3, 
+    ordertargetcolumn1=NULL, ordertargetcolumn2=NULL, colorgradient=FALSE) {
 
     class1 = meta.data[, target_columns[1]]
     class2 = meta.data[, target_columns[2]]
-    P36 <- createPalette(length(levels(factor(class2))), c("#ff0000", "#00ff00", "#0000ff"))
-
+    exprsdata <- as.matrix(as.data.frame(exprsdata))
+    class(exprsdata) <-"numeric"
     if (reduction=="PCA") {
         pca <- prcomp(t(exprsdata))
         E <- get_eig(pca)
         PCA <- pca$x
-
-        df <- as.data.frame(cbind(PCA[, 1], PCA[, 2], class1, class2))
+        df <- as.data.frame(cbind(PCA[, 1], PCA[, 2], as.character(class1), as.character(class2)))
         colnames(df) <- c("PC1", "PC2", "class1", "class2")
         df$PC1 <- as.numeric(df$PC1)
         df$PC2 <- as.numeric(df$PC2)
-
-        pcaplot <- ggplot(df, aes(x=PC1, y=PC2, color = factor(class2), 
-            shape = factor(class1))) +
+        if (!is.null(ordertargetcolumn1)) {
+            df$class1 <- factor(df$class1, levels = ordertargetcolumn1)
+        } else {
+            df$class1 <- factor(df$class1)
+        }
+        if (!is.null(ordertargetcolumn2)) {
+            df$class2 <- factor(df$class2, levels = ordertargetcolumn2)
+        } else {
+            df$class2 <- factor(df$class2)
+        }
+        if (isFALSE(colorgradient)) {
+            P36 <- createPalette(length(levels(df$class2)), c("#ff0000", "#00ff00", "#0000ff"))
+        } else if( isTRUE(colorgradient)) {
+            colfunc <- colorRampPalette(c("#bcb7b7","#797373","#00ff00", "#015601"))
+            P36 <- colfunc(length(levels(df$class2)))
+        }
+        pcaplot <- ggplot(df, aes(x=PC1, y=PC2, color = class2, shape = class1)) +
             geom_point(size = I(pointsize)) +
             theme_minimal() +
             theme(legend.title = element_blank()) +
@@ -51,16 +66,16 @@ dim_reduction <- function(exprsdata, meta.data,  target_columns=c(2,3),
             scale_fill_manual(values = as.character(P36)) +
             scale_shape_manual(values = seq(1, length(levels(factor(class1)))))
         if (isTRUE(save.fig)) {
-            ggsave(file.path(output_dir, paste0(reduction,".png")), width = 4.5, height = 3, bg = "white", dpi = 300)
-            ggsave(file.path(output_dir, paste0(reduction, ".pdf")), width = 4.5, height = 3, bg = "white", dpi = 300)
+            ggsave(file.path(output_dir, paste0(file.name, "_", reduction,".png")), width = 4.5, height = 3, bg = "white", dpi = 300)
+            ggsave(file.path(output_dir, paste0(file.name, "_", reduction, ".pdf")), width = 4.5, height = 3, bg = "white", dpi = 300)
         }
         #scree plot 
         scree.plot <- fviz_eig(pca, addlabels = TRUE, hjust = -0.3)
         if (isTRUE(save.fig)) {
-            png(file.path(output_dir, paste0(reduction, "scree.png")), width = 7, height = 6, units = "in", res = 300)
+            png(file.path(output_dir, paste0(file.name, "_", reduction, "scree.png")), width = 7, height = 6, units = "in", res = 300)
             print(scree.plot)
             dev.off()
-            pdf(file.path(output_dir, paste0(reduction, "scree.pdf")), width = 7, height = 6)
+            pdf(file.path(output_dir, paste0(file.name, "_", reduction, "scree.pdf")), width = 7, height = 6)
             print(scree.plot)
             dev.off()
         }
@@ -72,12 +87,12 @@ dim_reduction <- function(exprsdata, meta.data,  target_columns=c(2,3),
         loadingscores <- loadingscores[is_pc1_0, ]
         loadingscores <- loadingscores[with(loadingscores, order(-PC1)), ]
 
-        write.table(loadingscores["PC1"], file = file.path(output_dir, "loadingscores_pc1.txt"))
+        write.table(loadingscores["PC1"], file = file.path(output_dir, paste0(file.name, "_","loadingscores_pc1.txt")))
 
         loadingscores <- as.data.frame(pca$rotation)
         loadingscores <- loadingscores[is_pc2_0, ]
         loadingscores <- loadingscores[with(loadingscores, order(-PC2)), ]
-        write.table(loadingscores["PC2"], file = file.path(output_dir, "loadingscores_pc2.txt"))
+        write.table(loadingscores["PC2"], file = file.path(output_dir, paste0(file.name, "_","loadingscores_pc2.txt")))
     } else if (reduction=="UMAP") {
         UMAP <- umap(t(exprsdata), n_neighbors=5)
         U <- UMAP$layout
@@ -98,8 +113,8 @@ dim_reduction <- function(exprsdata, meta.data,  target_columns=c(2,3),
             scale_fill_manual(values = as.character(P36)) +
             scale_shape_manual(values = seq(1, length(levels(factor(class1)))))
         if (isTRUE(save.fig)) {
-            ggsave(file.path(output_dir, paste0(reduction, ".png")), width = 4.5, height = 3, bg = "white", dpi = 300)
-            ggsave(file.path(output_dir, paste0(reduction, ".pdf")), width = 4.5, height = 3, bg = "white", dpi = 300)
+            ggsave(file.path(output_dir, paste0(file.name, "_", reduction, ".png")), width = 4.5, height = 3, bg = "white", dpi = 300)
+            ggsave(file.path(output_dir, paste0(file.name, "_", reduction, ".pdf")), width = 4.5, height = 3, bg = "white", dpi = 300)
         }
     } else {
         stop("ERROR: reduction parameter has to set to PCA or UMAP")
