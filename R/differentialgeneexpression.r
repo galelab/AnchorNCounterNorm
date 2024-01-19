@@ -312,7 +312,6 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd()) {
 heatmap4DE <- function(df, dfsig, contrastsorder, save.fig=TRUE, output_dir=getwd()) {
     dfcom <- reshape2::dcast(data = df, formula = gene~comparison, value.var = "LFC")
     dfcomsigonly <- reshape2::dcast(data = dfsig, formula = gene~comparison, value.var = "LFC")
-    print(contrastsorder)
     # Sig data frame 
     dfcomsigonly4sig <- dfcomsigonly
     rownames(dfcomsigonly4sig) <- dfcomsigonly4sig$gene
@@ -329,7 +328,6 @@ heatmap4DE <- function(df, dfsig, contrastsorder, save.fig=TRUE, output_dir=getw
     dfcomsig4hm <- as.matrix(dfcomsig4hm)
     dfcomsig4hm <- dfcomsig4hm[, contrastsorder]
     class(dfcomsig4hm) <- "numeric"
-    print(head(dfcomsig4hm))
 
     col_fun <- colorRamp2(c(-3, -2, -1, 0, 1, 2, 3), c("darkblue", "mediumblue", "dodgerblue", "white", "orange", "red", "darkred"))
     hmC <- Heatmap(dfcomsig4hm,
