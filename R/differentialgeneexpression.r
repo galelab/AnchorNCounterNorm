@@ -256,8 +256,8 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd(), pva
                 panel.grid.minor = element_blank()) +
                 theme(strip.background = element_rect(fill = "white")) 
         if(isTRUE(save.fig)) {
-            ggsave(file.path(output_dir, paste0("volcanoplot_individual_", comp,".png")), width=3, height=3.5, units="in", dpi = 300, bg = "white")
-            ggsave(file.path(output_dir, paste0("volcanoplot_individual_", comp,".pdf")), width=3, height=3.5, units="in",  dpi = 300, bg = "white")
+            ggsave(file.path(output_dir, paste0("volcanoplot_individual_", comp,".png")), width=3, height=3, units="in", dpi = 300, bg = "white")
+            ggsave(file.path(output_dir, paste0("volcanoplot_individual_", comp,".pdf")), width=3, height=3, units="in",  dpi = 300, bg = "white")
         }
     }
     if(length(unique(df$comparison)) > 1) {
