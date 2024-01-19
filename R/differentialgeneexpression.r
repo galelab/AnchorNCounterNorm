@@ -53,7 +53,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
 
         tmp <- t(exprsdata)
         totaldata <- merge(tmp, meta.data, by.x="row.names", by.y=1)
-
+        totaldata[, compare.column] <- str_replace(totaldata[, compare.column], "-", "_")
         if ( DE.test=="wilcox"|| DE.test=="ttest" ) {
             message("Running ", DE.test, " test...")
             allresults <- data.frame(matrix(ncol = 7, nrow=length(genes)*length(contrastslist)))
@@ -114,25 +114,32 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
                     volcanoplotfigures <- volcano_plot(allresults4fig, pval.cutoff = pval.cutoff, save.fig = save.fig, output_dir = output_dir)
                 }
                 if ((isTRUE(heatmap.plot) & length(unique(allresults4figsig$comparison))>1)) {
-                    heatmapfigures <- heatmap4DE(allresults4fig, allresults4figsig, save.fig=save.fig, output_dir = output_dir)
+                    heatmapfigures <- heatmap4DE(allresults4fig, allresults4figsig, contrastslist,
+                        save.fig=save.fig, output_dir = output_dir)
                 } else if ((isTRUE(heatmap.plot) & length(unique(allresults4figsig$comparison))==1)) {
                     message('WARNING: heatmap will not be made with only one comparison')
                 }
             } else {
                 message("WARNING: no significant genes ")
+                if (isTRUE(volcano.plot)) {
+                    volcanoplotfigures <- volcano_plot(allresults4fig,
+                        pval.cutoff = pval.cutoff,
+                        save.fig = save.fig, output_dir = output_dir
+                    )
+                }
             }
             if(nrow(allresults4figsig) > 0 ) {
                 if (isTRUE(volcano.plot) & (isTRUE(heatmap.plot))) {
-                    return(list("allresults" <- allresults, "sigresults"=allresults4figsig, "volcanoplots"=volcanoplotfigures, "heatmapplots"=heatmapfigures))
+                    return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig, "volcanoplots" = volcanoplotfigures, "heatmapplots" = heatmapfigures))
                 } else if ((isTRUE(volcano.plot) & isFALSE(heatmap.plot))) {
-                    return(list("allresults" <- allresults, "sigresults"=allresults4figsig, "volcanoplots"=volcanoplotfigures))
+                    return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig, "volcanoplots" = volcanoplotfigures))
                 } else if ((isFALSE(volcano.plot) & isTRUE(heatmap.plot))) {
                     return(list("allresults" <- v, "sigresults"=allresults4figsig, "heatmapplots"=heatmapfigures))
                 } else {
-                    return(list("allresults" <- allresults, "sigresults"=allresults4figsig))
+                    return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig))
                 }
             } else {
-                return(list("allresults" <- allresults, "sigresults"=allresults4figsig))
+                return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig))
             }
         } else if (DE.test=="ANOVA") {
             comparisonlist <- list()
@@ -155,7 +162,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
             alltukeydf <- do.call(rbind, comparisonlist)
             rownames(alltukeydf) <- 1:nrow(alltukeydf)
             if (!is.null(contrastslist)) {
-                contrastslist <- str_remove_all(contrastslist, "\\s+")
+                contrastslist <- str_replace_all(contrastslist, "\\s*-\\s*", "-")
                 alltukeydf<- alltukeydf[alltukeydf$comparison %in% contrastslist, ]
             }
             colnames(alltukeydf)[4] <- "adj.pval"
@@ -166,29 +173,36 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
             alltukeydf4fig <- alltukeydf[, c("gene","LFC","comparison","adj.pval" )]
             if(nrow(alltukeydfsig) > 0 ) {
                 if (isTRUE(volcano.plot)) {
-                    volcanoplotfigures <- volcano_plot(alltukeydf4fig, pval.cutoff = pval.cutoff, save.fig = save.fig, output_dir = output_dir)
+                    volcanoplotfigures <- volcano_plot(alltukeydf4fig, pval.cutoff = pval.cutoff, 
+                        save.fig = save.fig, output_dir = output_dir)
                 }
                 if ((isTRUE(heatmap.plot) & length(unique(alltukeydfsig$comparison))>1)) {
-                    print ("TEST1")
-                    heatmapfigures <- heatmap4DE(alltukeydf4fig, alltukeydfsig, save.fig=save.fig, output_dir = output_dir)
+                    heatmapfigures <- heatmap4DE(alltukeydf4fig, alltukeydfsig, contrastslist,
+                        save.fig = save.fig, output_dir = output_dir)
                 } else if ((isTRUE(heatmap.plot) & length(unique(alltukeydfsig$comparison))==1)) {
                     message('WARNING: heatmap will not be made with only one comparison')
                 }
             } else {
                 message("WARNING: no significant genes ")
+                if (isTRUE(volcano.plot)) {
+                    volcanoplotfigures <- volcano_plot(alltukeydf4fig,
+                        pval.cutoff = pval.cutoff,
+                        save.fig = save.fig, output_dir = output_dir
+                    )
+                }
             }
             if(nrow(alltukeydfsig) > 0 ) {
                 if (isTRUE(volcano.plot) & (isTRUE(heatmap.plot)) & length(unique(alltukeydfsig$comparison))>1) {
-                    return(list("allresults" <- alltukeydf, "sigresults"=alltukeydfsig, "volcanoplots"=volcanoplotfigures, "heatmapplots"=heatmapfigures))
+                    return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig, "volcanoplots" = volcanoplotfigures, "heatmapplots" = heatmapfigures))
                 } else if ((isTRUE(volcano.plot) & isFALSE(heatmap.plot))) {
-                    return(list("allresults" <- alltukeydf, "sigresults"=alltukeydfsig, "volcanoplots"=volcanoplotfigures))
-                } else if ((isFALSE(volcano.plot) & isTRUE(heatmap.plot) & length(unique(alltukeydfsig$comparison))>1)) {
-                    return(list("allresults" <- alltukeydf, "sigresults"=alltukeydfsig, "heatmapplots"=heatmapfigures))
+                    return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig, "volcanoplots" = volcanoplotfigures))
+                } else if ((isFALSE(volcano.plot) & comparisonlistcomparisonlist(heatmap.plot) & length(unique(alltukeydfsig$comparison))>1)) {
+                    return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig, "heatmapplots" = heatmapfigures))
                 } else {
-                    return(list("allresults" <- alltukeydf, "sigresults"=alltukeydfsig))
+                    return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig))
                 }
             } else {
-                return(list("allresults" <- alltukeydf, "sigresults"=alltukeydfsig))
+                return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig))
             }
         } else {  
             stop("ERROR: DE.test needs to either be ttest, wilcox or ANOVA")
@@ -199,7 +213,6 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd()) {
     df <- as.data.frame(df)
     individual.compare.plots <- list()
     for (comp in unique(df$comparison)) {
-        print(comp)
         tmp <- df[df$comparison==comp, ]
         tmp$Sign <- "NS"
         tmp$Sign[tmp$adj.pval < pval.cutoff] <- paste0("Padj < ", pval.cutoff)
@@ -296,26 +309,28 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd()) {
      return(list("individual.plots"=individual.compare.plots, "combined.comparison.plots"=pl))
 }
 
-heatmap4DE <- function(df, dfsig, save.fig=TRUE, output_dir=getwd()) {
+heatmap4DE <- function(df, dfsig, contrastsorder, save.fig=TRUE, output_dir=getwd()) {
     dfcom <- reshape2::dcast(data = df, formula = gene~comparison, value.var = "LFC")
     dfcomsigonly <- reshape2::dcast(data = dfsig, formula = gene~comparison, value.var = "LFC")
-
+    print(contrastsorder)
     # Sig data frame 
     dfcomsigonly4sig <- dfcomsigonly
     rownames(dfcomsigonly4sig) <- dfcomsigonly4sig$gene
     dfcomsigonly4sig$gene <- NULL
     write.csv(dfcomsigonly4sig, file.path(output_dir, "DEgenesSigLFConly.csv"))
     dfcomsigonly4sig <- as.matrix(dfcomsigonly4sig)
+    dfcomsigonly4sig <- dfcomsigonly4sig[, intersect(contrastsorder, colnames(dfcomsigonly4sig))]
     class(dfcomsigonly4sig) <- "numeric"
-    
     # Full data frame 
     dfcomsig4hm <- dfcom[dfcom$gene %in% dfcomsigonly$gene, ]
     rownames(dfcomsig4hm) <- dfcomsig4hm$gene
     dfcomsig4hm$gene <- NULL
     write.csv(dfcomsig4hm, file.path(output_dir, "DEgenesSigLFC.csv"))
     dfcomsig4hm <- as.matrix(dfcomsig4hm)
+    dfcomsig4hm <- dfcomsig4hm[, contrastsorder]
     class(dfcomsig4hm) <- "numeric"
- 
+    print(head(dfcomsig4hm))
+
     col_fun <- colorRamp2(c(-3, -2, -1, 0, 1, 2, 3), c("darkblue", "mediumblue", "dodgerblue", "white", "orange", "red", "darkred"))
     hmC <- Heatmap(dfcomsig4hm,
         name = "LFC",
@@ -330,9 +345,9 @@ heatmap4DE <- function(df, dfsig, save.fig=TRUE, output_dir=getwd()) {
         # row_labels = rownames(dfcomsig4hm),
         border = F, width = unit(4.5, "cm"),
         height = unit(4.5, "cm"),
-        column_names_gp = grid::gpar(fontsize = 9),
+        column_names_gp = grid::gpar(fontsize = 7),
         column_title_gp = grid::gpar(fontsize = 9, fontface = "bold"),
-        row_names_gp = grid::gpar(fontsize = 7),
+        row_names_gp = grid::gpar(fontsize = 6),
         heatmap_legend_param = list(
             legend_height = unit(3, "cm"),
             labels_gp = gpar(fontsize = 14),
@@ -353,9 +368,9 @@ heatmap4DE <- function(df, dfsig, save.fig=TRUE, output_dir=getwd()) {
         # row_labels = rownames(dfcomsig4hm),
         border = F, width = unit(4.5, "cm"),
         height = unit(4.5, "cm"),
-        column_names_gp = grid::gpar(fontsize = 9),
+        column_names_gp = grid::gpar(fontsize = 7),
         column_title_gp = grid::gpar(fontsize = 9, fontface = "bold"),
-        row_names_gp = grid::gpar(fontsize = 7),
+        row_names_gp = grid::gpar(fontsize = 6),
         heatmap_legend_param = list(
             legend_height = unit(3, "cm"),
             labels_gp = gpar(fontsize = 14),
