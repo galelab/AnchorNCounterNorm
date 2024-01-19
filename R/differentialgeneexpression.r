@@ -24,7 +24,7 @@
 
 run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=NULL, adj.pval.method="BH", adjbycomparison=TRUE,
     pval.cutoff=0.05, save.fig=TRUE, check.norm=TRUE, DE.test="ANOVA", covariate.column=NULL, output_dir=getwd(), volcano.plot=TRUE,
-    heatmap.plot=TRUE) {
+    heatmap.plot=TRUE, pval.cuttof.for.naming.vp=0.05) {
         genes <- rownames(exprsdata)
         exprsdata <- as.matrix(data.frame(exprsdata, check.names = FALSE))
         class(exprsdata) <- "numeric"
@@ -111,7 +111,9 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
             allresults4figsig <- allresultssig[, c("gene","LFC","comparison","adj.pval" )]
             if(nrow(allresults4figsig) > 0 ) {
                 if (isTRUE(volcano.plot)) {
-                    volcanoplotfigures <- volcano_plot(allresults4fig, pval.cutoff = pval.cutoff, save.fig = save.fig, output_dir = output_dir)
+                    volcanoplotfigures <- volcano_plot(allresults4fig, 
+                        pval.cutoff = pval.cutoff, save.fig = save.fig, 
+                        output_dir = output_dir, pval.cuttof.for.naming.vp = pval.cuttof.for.naming.vp)
                 }
                 if ((isTRUE(heatmap.plot) & length(unique(allresults4figsig$comparison))>1)) {
                     heatmapfigures <- heatmap4DE(allresults4fig, allresults4figsig, contrastslist,
@@ -124,7 +126,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
                 if (isTRUE(volcano.plot)) {
                     volcanoplotfigures <- volcano_plot(allresults4fig,
                         pval.cutoff = pval.cutoff,
-                        save.fig = save.fig, output_dir = output_dir
+                        save.fig = save.fig, output_dir = output_dir, pval.cuttof.for.naming.vp=pval.cuttof.for.naming.vp
                     )
                 }
             }
@@ -209,7 +211,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
         }
     }
 
-volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd()) {
+volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd(), pval.cuttof.for.naming.vp = 0.05) {
     df <- as.data.frame(df)
     individual.compare.plots <- list()
     for (comp in unique(df$comparison)) {
@@ -242,7 +244,7 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd()) {
             ) +
             scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
             geom_text_repel(
-                data =subset(tmp, adj.pval  < as.numeric(pval.cutoff)), aes(label=gene),
+                data =subset(tmp, adj.pval  < as.numeric(pval.cuttof.for.naming.vp)), aes(label=gene),
                 size = 2,  point.padding = 0.15, color = "black",
                 min.segment.length = .1, box.padding = .2, lwd = 1,
                 max.overlaps = 10
@@ -290,7 +292,7 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd()) {
             ) +
             scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
             geom_text_repel(
-                data =subset(df, adj.pval  < as.numeric(pval.cutoff)), aes(label=gene),
+                data =subset(df, adj.pval  < as.numeric(pval.cuttof.for.naming.vp)), aes(label=gene),
                 size = 2,  point.padding = 0.15, color = "black",
                 min.segment.length = .1, box.padding = .2, lwd = 1,
                 max.overlaps = 10
