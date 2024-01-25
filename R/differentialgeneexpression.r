@@ -107,8 +107,15 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
             }
             write.csv(allresults, file.path(output_dir, paste0(DE.test, "_allResults.csv")))
             write.csv(allresultssig, file.path(output_dir, paste0(DE.test, "_SignificantResults.csv")))
-            allresults4fig <- allresults[, c("gene","LFC","comparison","adj.pval" )]
-            allresults4figsig <- allresultssig[, c("gene","LFC","comparison","adj.pval" )]
+            if (adj.pval.method!="none") {
+                allresults4fig <- allresults[, c("gene","LFC","comparison","adj.pval" )]
+                allresults4figsig <- allresultssig[, c("gene","LFC","comparison","adj.pval" )]
+            } else {
+                allresults4fig <- allresults[, c("gene", "LFC", "comparison", "pvalue")]
+                allresults4figsig <- allresultssig[, c("gene", "LFC", "comparison", "pvalue")]
+                colnames(allresults4figsig)[4] <- "adj.pval"
+                colnames(allresults4fig)[4] <- "adj.pval"
+            }
             if(nrow(allresults4figsig) > 0 ) {
                 if (isTRUE(volcano.plot)) {
                     volcanoplotfigures <- volcano_plot(allresults4fig, 
