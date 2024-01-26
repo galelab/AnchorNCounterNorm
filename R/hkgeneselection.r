@@ -19,6 +19,7 @@
 
 hk_gene_stats <- function(data, group.by="sample",
     min_num_hk_genes = 5, manually_selected_hk_genes = FALSE, output_dir = getwd()) {
+    get_CV_4_alltypes(data$counts, output_dir = output_dir)
     if (isFALSE(manually_selected_hk_genes)) {
         lowestcv <- identifyhkgenes(data$counts, hknum = min_num_hk_genes, output_dir = output_dir)
         pl <- violin_plots_hkgenes(data$counts[data$counts$Gene_Name %in% lowestcv$hkgenes, ], 
@@ -40,6 +41,38 @@ hk_gene_stats <- function(data, group.by="sample",
 
 calc_CV <- function(x) {
     sd(x) / mean(x)
+}
+
+get_CV_4_alltypes <- function(df, output_dir) {
+    dfdata <- df[, 3:length(colnames(df))]
+    gene_names <- df[, "Gene_Name"]
+    class <- df[, "Class"]
+    print(length(class))
+    dfdata <- as.matrix(as.data.frame(dfdata))
+    class(dfdata) <- "numeric"
+    print(dim(dfdata))
+    CV_all <- apply(dfdata, MARGIN = 1, calc_CV)
+    mean_all <- apply(dfdata, MARGIN = 1, mean)
+    sd_all <- apply(dfdata, MARGIN = 1, sd)
+    geomean_all <- apply(dfdata, MARGIN = 1, geoMean)
+    message("STATUS: Loading data into data.frame")
+    alldf <- data.frame(matrix(nrow = length(rownames(dfdata)), ncol = 6))
+    colnames(alldf) <- c("mean", "geomean", "sd", "CV", "genes", "Class")
+    alldf$mean <- as.numeric(mean_all)
+    alldf$geomean <- as.numeric(geomean_all)
+    alldf$sd <- as.numeric(sd_all)
+    alldf$CV <- as.numeric(CV_all)
+    alldf$Class <- class
+    alldf$genes <- gene_names
+    alldf <- alldf[order(CV_all), ]
+    write.csv(alldf, file.path(output_dir, "allCVagenesstats.csv"), quote = F, row.names = F)
+    ggplot(alldf, aes(x=Class, y=CV_all, color=Class)) + geom_boxplot() +theme_Publication(base_size=8) + 
+        scale_fill_manual(values = c("Endogenous"="#ff615d", "Housekeeping"="#004c7a", "Negative"="#ffd400", "Positive"="#61c57b")) +
+            theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5,  size = 8), 
+                axis.title.x = element_blank()) +labs(y="CV")
+    ggsave(file.path(output_dir, "boxplot_CV.png"), width=3.5,height=3, dpi=300)
+    ggsave(file.path(output_dir, "boxplot_CV.pdf"), width = 3.5, height = 3, dpi = 300)
+
 }
 
 get_CV_4_HKgenes <- function(df, output_dir) {
