@@ -138,12 +138,12 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
                 }
             }
             if(nrow(allresults4figsig) > 0 ) {
-                if (isTRUE(volcano.plot) & (isTRUE(heatmap.plot))) {
+                if (isTRUE(exists("volcanoplotfigures")) & (isTRUE(exists("heatmapfigures")))) {
                     return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig, "volcanoplots" = volcanoplotfigures, "heatmapplots" = heatmapfigures))
-                } else if ((isTRUE(volcano.plot) & isFALSE(heatmap.plot))) {
+                } else if ((isTRUE(exists("volcanoplotfigures")) & isFALSE(exists("heatmapfigures")))) {
                     return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig, "volcanoplots" = volcanoplotfigures))
-                } else if ((isFALSE(volcano.plot) & isTRUE(heatmap.plot))) {
-                    return(list("allresults" <- v, "sigresults"=allresults4figsig, "heatmapplots"=heatmapfigures))
+                } else if ((isFALSE(exists("volcanoplotfigures"))) & isTRUE(exists("heatmapfigures"))) {
+                    return(list("allresults" <- allresults4fig, "sigresults"=allresults4figsig, "heatmapplots"=heatmapfigures))
                 } else {
                     return(list("allresults" <- allresults4fig, "sigresults" = allresults4figsig))
                 }
@@ -201,11 +201,11 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
                 }
             }
             if(nrow(alltukeydfsig) > 0 ) {
-                if (isTRUE(volcano.plot) & (isTRUE(heatmap.plot)) & length(unique(alltukeydfsig$comparison))>1) {
+                if (isTRUE(exists("volcanoplotfigures")) & (isTRUE(exists("heatmapfigures"))) & length(unique(alltukeydfsig$comparison))>1) {
                     return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig, "volcanoplots" = volcanoplotfigures, "heatmapplots" = heatmapfigures))
-                } else if ((isTRUE(volcano.plot) & isFALSE(heatmap.plot))) {
+                } else if ((isTRUE(exists("volcanoplotfigures")) & isFALSE(exists("heatmapfigures")))) {
                     return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig, "volcanoplots" = volcanoplotfigures))
-                } else if ((isFALSE(volcano.plot) & comparisonlistcomparisonlist(heatmap.plot) & length(unique(alltukeydfsig$comparison))>1)) {
+                } else if ((isFALSE(exists("volcanoplotfigures")) & comparisonlistcomparisonlist(heatmap.plot) & length(unique(alltukeydfsig$comparison))>1)) {
                     return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig, "heatmapplots" = heatmapfigures))
                 } else {
                     return(list("allresults" = alltukeydf, "sigresults" = alltukeydfsig))
