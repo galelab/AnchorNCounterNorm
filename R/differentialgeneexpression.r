@@ -119,7 +119,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
             if(nrow(allresults4figsig) > 0 ) {
                 if (isTRUE(volcano.plot)) {
                     volcanoplotfigures <- volcano_plot(allresults4fig, 
-                        pval.cutoff = pval.cutoff, save.fig = save.fig, 
+                        pval.cutoff = pval.cutoff, adj.pval.method=adj.pval.method, save.fig = save.fig, 
                         output_dir = output_dir, pval.cuttof.for.naming.vp = pval.cuttof.for.naming.vp)
                 }
                 if ((isTRUE(heatmap.plot) & length(unique(allresults4figsig$comparison))>1)) {
@@ -132,7 +132,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
                 message("WARNING: no significant genes ")
                 if (isTRUE(volcano.plot)) {
                     volcanoplotfigures <- volcano_plot(allresults4fig,
-                        pval.cutoff = pval.cutoff,
+                        pval.cutoff = pval.cutoff, adj.pval.method=adj.pval.method,
                         save.fig = save.fig, output_dir = output_dir, pval.cuttof.for.naming.vp=pval.cuttof.for.naming.vp
                     )
                 }
@@ -183,7 +183,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
             if(nrow(alltukeydfsig) > 0 ) {
                 if (isTRUE(volcano.plot)) {
                     volcanoplotfigures <- volcano_plot(alltukeydf4fig, pval.cutoff = pval.cutoff, 
-                        save.fig = save.fig, output_dir = output_dir)
+                        adj.pval.method=adj.pval.method, save.fig = save.fig, output_dir = output_dir)
                 }
                 if ((isTRUE(heatmap.plot) & length(unique(alltukeydfsig$comparison))>1)) {
                     heatmapfigures <- heatmap4DE(alltukeydf4fig, alltukeydfsig, contrastslist,
@@ -195,7 +195,7 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
                 message("WARNING: no significant genes ")
                 if (isTRUE(volcano.plot)) {
                     volcanoplotfigures <- volcano_plot(alltukeydf4fig,
-                        pval.cutoff = pval.cutoff,
+                        pval.cutoff = pval.cutoff, adj.pval.method=adj.pval.method,
                         save.fig = save.fig, output_dir = output_dir
                     )
                 }
@@ -218,20 +218,29 @@ run_DE_analysis <- function(exprsdata, meta.data, compare.column, contrastslist=
         }
     }
 
-volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd(), pval.cuttof.for.naming.vp = 0.05) {
+volcano_plot <- function(df, pval.cutoff,adj.pval.method, save.fig=TRUE, output_dir=getwd(), pval.cuttof.for.naming.vp = 0.05) {
     df <- as.data.frame(df)
     individual.compare.plots <- list()
     for (comp in unique(df$comparison)) {
         tmp <- df[df$comparison==comp, ]
         tmp$Sign <- "NS"
-        tmp$Sign[tmp$adj.pval < pval.cutoff] <- paste0("Padj < ", pval.cutoff)
-        tmp$Sign[tmp$adj.pval < 0.01] <- "Padj < 0.01"
-        significance <- paste0("Padj < ", pval.cutoff)
-        tmp$Sign <- factor(tmp$Sign,
-            levels = c(
-                "NS", paste0("Padj < ", pval.cutoff), "Padj < 0.01"
+        if (adj.pval.method!="none") {
+            tmp$Sign[tmp$adj.pval < 0.05] <- "Padj < 0.05"
+            tmp$Sign[tmp$adj.pval < 0.01] <- "Padj < 0.01"
+            tmp$Sign <- factor(tmp$Sign,
+                levels = c(
+                    "NS", "Padj < 0.05", "Padj < 0.01"
+                )
             )
-        )
+        } else {
+            tmp$Sign[tmp$adj.pval < 0.05] <- "P < 0.05"
+            tmp$Sign[tmp$adj.pval < 0.01] <- "P < 0.01"
+            tmp$Sign <- factor(tmp$Sign,
+                levels = c(
+                    "NS", "P < 0.05", "P < 0.01"
+                )
+            )
+        }
         tmp$LFC <- as.numeric( tmp$LFC)
         tmp$adj.pval <- as.numeric( tmp$adj.pval)
         pl <- ggplot(tmp, aes(x=LFC, y= -log10(adj.pval),  color = Sign, label = gene)) + 
@@ -269,14 +278,23 @@ volcano_plot <- function(df, pval.cutoff, save.fig=TRUE, output_dir=getwd(), pva
     }
     if(length(unique(df$comparison)) > 1) {
         df$Sign <- "NS"
-        df$Sign[df$adj.pval < pval.cutoff] <- paste0("Padj < ", pval.cutoff)
-        df$Sign[df$adj.pval < 0.01] <- "Padj < 0.01"
-        significance <- paste0("Padj < ", pval.cutoff)
+        if (adj.pval.method!="none") {
+            df$Sign[df$adj.pval < 0.05] <- "Padj < 0.05"
+            df$Sign[df$adj.pval < 0.01] <- "Padj < 0.01"
+            df$Sign <- factor(df$Sign,
+                levels = c(
+                    "NS", "Padj < 0.05", "Padj < 0.01"
+                ))
+        }else { 
+            df$Sign[df$adj.pval < 0.05] <- "P < 0.05"
+            df$Sign[df$adj.pval < 0.01] <- "P < 0.01"
+            df$Sign <- factor(df$Sign,
+                levels = c(
+                    "NS", "P < 0.05", "P < 0.01"
+                )
+            )
+        }
 
-        df$Sign <- factor(df$Sign,
-            levels = c(
-                "NS", paste0("Padj < ", pval.cutoff), "Padj < 0.01"
-            ))
         df$LFC <- as.numeric( df$LFC)
         df$adj.pval <- as.numeric(df$adj.pval)
 
