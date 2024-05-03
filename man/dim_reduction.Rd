@@ -11,7 +11,11 @@ dim_reduction(
   reduction = "PCA",
   save.fig = TRUE,
   output_dir = getwd(),
-  pointsize = 3
+  file.name = "PCA",
+  pointsize = 3,
+  ordertargetcolumn1 = NULL,
+  ordertargetcolumn2 = NULL,
+  colorgradient = FALSE
 )
 }
 \arguments{

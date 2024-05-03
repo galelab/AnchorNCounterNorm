@@ -4,7 +4,13 @@
 \alias{ratio_normalization}
 \title{ratio normalization}
 \usage{
-ratio_normalization(data, hkgenes, output_dir = getwd())
+ratio_normalization(
+  data,
+  hkgenes,
+  output_dir = getwd(),
+  save.fig = TRUE,
+  separte_norm_counts_by_condition = NULL
+)
 }
 \arguments{
 \item{hkgenes}{list of hk genes to use to get ratio}

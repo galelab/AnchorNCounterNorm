@@ -18,7 +18,8 @@ run_DE_analysis(
   covariate.column = NULL,
   output_dir = getwd(),
   volcano.plot = TRUE,
-  heatmap.plot = TRUE
+  heatmap.plot = TRUE,
+  pval.cuttof.for.naming.vp = 0.05
 )
 }
 \arguments{
