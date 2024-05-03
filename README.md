@@ -12,7 +12,8 @@ library(AnchorNCounterNorm)
 ## How to execute pipeline
 
 ```R
-data = load_nCounter_files(pathtoRCC="folder/with/RCCfiles/", meta.data="path/to/metadata/csvfile")
+data <- load_nCounter_files(pathtoRCC="folder/with/RCCfiles/", meta.data="path/to/metadata/csvfile")
+
 HKstats <- hk_gene_stats(data, manually_selected_hk_genes = c("B2M", "GAPDH", "PGK1", "RPLP0"), group.by="day")
 
 normdata <- ratio_normalization(data, hkgenes=c("GAPDH", "PGK1", "RPLP0"))
