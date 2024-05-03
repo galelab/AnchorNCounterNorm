@@ -1,4 +1,4 @@
-Package: NCounterNorm
+Package: AnchorNCounterNorm
 Title: normalizes ncounter counts using anchoring approach
 Version: 1.0.0
 Authors@R: 
