@@ -14,7 +14,7 @@
 #' @import umap
 #' @import ggplot2
 #' @import Polychrome
-#' @import colorRamp
+#' @import grDevices
 #' @examples
 #' data <- hk_gene_stats(counts)
 #' 

@@ -10,7 +10,7 @@
 #' @export
 #' @import EnvStats
 #' @import ggplot2
-#' @import reshape2 norm_matrix_melt <- melt(norm_matrix)
+#' @import reshape2
 #' @examples
 #' data <- hk_gene_stats(counts)
 
