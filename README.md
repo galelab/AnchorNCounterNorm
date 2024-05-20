@@ -6,7 +6,7 @@ To download in R please use install_github('galelab/AnchorNCounterNorm').  First
 
 ```R
 library('devtools')
-install_github('galelab/AnchorNCounterNorm')
+install_github('lwhitmore/AnchorNCounterNorm')
 library(AnchorNCounterNorm)
 ```
 ## How to execute pipeline
