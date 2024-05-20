@@ -12,5 +12,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 biocViews: Software, factoextra, NanoStringQCPro 
 Imports: EnvStats, ComplexHeatmap, Polychrome, circlize, ggplot2,
-    ggrepel, reshape2, stringr, umap, grDevices, NanoStringQCPro
+    ggrepel, reshape2, stringr, umap, grDevices, NanoStringQCPro, factoextra
 LazyData: true
