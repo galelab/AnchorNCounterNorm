@@ -15,6 +15,7 @@
 #' @param output_dir directory to store results 
 #' @param volcano.plot whether to make volcano plots showing DE genes (default is TRUE) 
 #' @param heatmap.plot whether to make heatmap showing DE genes (default is TRUE)
+#' @export
 #' @import stringr
 #' @import ggplot2
 #' @import ggrepel
