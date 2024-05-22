@@ -14,4 +14,5 @@ Depends: R (>= 4.1)
 biocViews: Software, factoextra, NanoStringQCPro
 Imports: BiocVersion, EnvStats, ComplexHeatmap, Polychrome, circlize, ggplot2,
     ggrepel, reshape2, stringr, umap, grDevices, NanoStringQCPro, factoextra, ggthemes
+Suggests: magick
 LazyData: true
