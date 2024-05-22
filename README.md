@@ -19,7 +19,7 @@ HKstats <- hk_gene_stats(data, manually_selected_hk_genes = c("B2M", "GAPDH", "P
 normdata <- ratio_normalization(data, hkgenes=c("GAPDH", "PGK1", "RPLP0"))
 
 dimred <- dim_reduction(normdata$log_counts_ratio, data$meta.data, target_columns = c(2,4))
-```
+
 ### DE examples 
 
 ```R
