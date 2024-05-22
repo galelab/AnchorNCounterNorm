@@ -12,6 +12,7 @@
 #' @import EnvStats
 #' @import ggplot2
 #' @import reshape2
+#' @import ggthemes
 #' @examples
 #' data <- hk_gene_stats(counts)
 #' 
