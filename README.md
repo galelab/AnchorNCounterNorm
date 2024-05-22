@@ -2,11 +2,11 @@
 NCounter anchoring normalization package
 
 ## Install 
-To download in R please use install_github('galelab/AnchorNCounterNorm').  First load library('devtools')
+To download in R run the following commands
 
 ```R
 library('devtools')
-install_github('lwhitmore/AnchorNCounterNorm')
+install_github('galelab/AnchorNCounterNorm')
 library(AnchorNCounterNorm)
 ```
 ## How to execute pipeline
